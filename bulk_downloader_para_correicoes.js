@@ -31,11 +31,80 @@
         CHECK_INTERVAL: 500
     };
 
+    // RUNTIME STATE
+
+    const RUNTIME = {
+
+		session: {
+			active: false,
+			startedAt: null,
+			finishedAt: null,
+			cancelRequested: false
+		},
+
+		stats: {
+			total: 0,
+			completed: 0,
+			failed: 0,
+			skipped: 0
+		},
+
+		current: {
+			index: 0,
+			row: null,
+			filename: null,
+			status: 'idle' // idle, preparing, downloading, completed, failed, skipped, cancelled
+		}
+	}
+
     // STATE
 
     let uiReady = false;
     let capturedRows = [];
     let isHooked = false;
+
+	// STATE HELPER FUNCTIONS
+
+	function isDownloadActive() {
+		return RUNTIME.session.active;
+	}
+
+	function startSession(totalFiles) {
+
+		RUNTIME.session.active = true;
+		RUNTIME.session.startedAt = Date.now();
+		RUNTIME.stats.total = totalFiles;
+	}
+
+	function setButtonLoading(button, loading) {
+
+		button.disabled = loading;
+
+		button.innerText = loading
+			? 'Downloading...'
+			: 'Download All Files';
+	}
+
+	function finishSession() {
+
+		RUNTIME.session.active = false;
+		RUNTIME.session.finishedAt = Date.now();
+	}
+
+	function updateCurrentDownload(index, row, filename) {
+
+		RUNTIME.current.index = index;
+		RUNTIME.current.row = row;
+		RUNTIME.current.filename = filename;
+	}
+
+	function markDownloadCompleted() {
+		RUNTIME.stats.completed++;
+	}
+
+	function markDownloadFailed() {
+		RUNTIME.stats.failed++;
+	}
 
     // DATA LAYER
 
@@ -78,12 +147,19 @@
 
     async function startDownloadPipeline() {
 
+		if (isDownloadActive()) {
+			alert('A download session is already running.');
+			return;
+		}
+
         const rows = getData();
 
         if (!rows.length) {
             alert('No data available');
             return;
         }
+
+		startSession(rows.length);
 
         console.log('[Downloader] starting pipeline:', rows.length);
 
@@ -102,9 +178,13 @@
 
                 const filename = buildFilename(i, row, row_index_digits);
 
+				updateCurrentDownload(i, row, filename);
+
                 console.log('[Downloader] downloading:', filename);
 
                 await downloadFile(row.id, filename);
+
+				markDownloadCompleted();
 
                 await sleep(randomDelay(3000, 5000));
             }
@@ -114,7 +194,9 @@
         } catch (err) {
             console.error('[Downloader] pipeline error:', err);
             alert('Download failed. Check console.');
-        }
+        } finally {
+			finishSession();
+		}
     }
 
     // SAVE FILE
@@ -305,7 +387,21 @@
     // EVENT BINDING
 
     function bindButton(button) {
-        button.addEventListener('click', startDownloadPipeline);
+        button.addEventListener('click', async () => {
+
+			if (isDownloadActive()) {
+				return;
+			}
+
+			setButtonLoading(button, true);
+
+			try {
+				await startDownloadPipeline();
+			}
+			finally {
+				setButtonLoading(button, false);
+			}
+		});
     }
 
 })();
