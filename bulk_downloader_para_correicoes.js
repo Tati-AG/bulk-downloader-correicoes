@@ -127,7 +127,7 @@
         const prefix =
               String(index + 1).padStart(pad_length, '0') + '. ';
 
-        return prefix + sanitizeFilename(row.numeroProcesso);
+        return prefix + sanitizeFilename(row.nome);
     }
 
     async function downloadFile(id, filename) {
@@ -171,7 +171,7 @@
 
                 const row = rows[i];
 
-                if (!row?.id || !row?.numeroProcesso) {
+                if (!row?.id || !row?.nome) {
                     console.warn('[Downloader] invalid row:', row);
                     continue;
                 }
