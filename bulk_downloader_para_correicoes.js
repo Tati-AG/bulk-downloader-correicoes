@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bulk Downloader for Correicoes
 // @namespace    company.tools
-// @version      0.1
+// @version      1.0
 // @description  Auto-download files from jqGrid JSON
 // @match        https://aplicacao.mpmg.mp.br/correicaopromotores/api/controller/correicao/*
 // @grant        none
