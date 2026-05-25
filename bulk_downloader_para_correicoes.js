@@ -1,9 +1,13 @@
 // ==UserScript==
 // @name         Bulk Downloader for Correicoes
-// @namespace    company.tools
-// @version      1.0
+// @namespace    https://github.com/Tati-AG/bulk-downloader-correicoes
+// @version      1.0.0
 // @description  Auto-download files from jqGrid JSON
 // @match        https://aplicacao.mpmg.mp.br/correicaopromotores/api/controller/correicao/*
+//
+// @downloadURL  https://raw.githubusercontent.com/Tati-AG/bulk-downloader-correicoes/refs/heads/main/bulk_downloader_para_correicoes.js
+// @updateURL    https://raw.githubusercontent.com/Tati-AG/bulk-downloader-correicoes/refs/heads/main/bulk_downloader_para_correicoes.js
+//
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
