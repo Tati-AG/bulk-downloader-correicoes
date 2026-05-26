@@ -28,6 +28,7 @@
 
     const DOWNLOAD_DELAY_MIN = 3000;
     const DOWNLOAD_DELAY_MAX = 5000;
+	const TIMEOUT = 1000000;
 
     const CONFIG = {
         BUTTON_ID: 'bulkDownloadBtn',
@@ -226,7 +227,7 @@
                 a.remove();
                 resolve();
 
-            }, 3000);
+            }, TIMEOUT);
         });
     }
 
